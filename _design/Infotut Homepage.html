@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<title>Infotut.ru — главная страница</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500;1,6..72,600&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Roboto+Slab:wght@500;600;700&family=Spectral:ital,wght@0,400;0,500;1,500&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet">
+<link rel="stylesheet" href="homepage.css" />
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #f0eee9; }
+  body { font-family: 'Geist', sans-serif; }
+  /* artboard reset — let .page own everything */
+  .ab-host { width: 100%; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="homepage.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+  const { DesignCanvas, DCSection, DCArtboard } = window;
+
+  // Heights are intentional — they fit the full reflowed page at that width.
+  const sizes = [
+    { id: 'mobile',   label: 'Mobile · 360',    w: 360,  h: 13500 },
+    { id: 'tablet',   label: 'Tablet · 768',    w: 768,  h: 8200 },
+    { id: 'notebook', label: 'Notebook · 1200', w: 1200, h: 7800 },
+    { id: 'desktop',  label: 'Desktop · 1440',  w: 1440, h: 8100 },
+  ];
+
+  const themeBg = {
+    classic: '#FFFFFF',
+    slate:   '#FAFAFA',
+    noir:    '#0E0E0E',
+  };
+
+  function Frame({ width, theme, font }) {
+    return (
+      <div
+        data-screen-label={`${width}px${theme ? ' · ' + theme : ''}`}
+        style={{
+          width: '100%', height: '100%', overflow: 'hidden',
+          background: theme ? themeBg[theme] : '#f6f1e6',
+        }}>
+        <Homepage theme={theme} font={font} />
+      </div>
+    );
+  }
+
+  const themes = [
+    { id: 'slate',   font: 'plex',  label: 'Slate · монохром · IBM Plex Sans',
+      desc: 'IBM Plex Sans — гуманистический гротеск, легко читаемый на длинных текстах' },
+  ];
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection
+          id="homepage"
+          title="Infotut.ru · Главная"
+          subtitle="Slate · монохром · IBM Plex Sans · 360 · 768 · 1200 · 1440">
+          {sizes.map(s => (
+            <DCArtboard key={s.id} id={s.id} label={s.label} width={s.w} height={s.h}>
+              <Frame width={s.w} theme="slate" font="plex" />
+            </DCArtboard>
+          ))}
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
