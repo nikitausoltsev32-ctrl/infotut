@@ -1,21 +1,18 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Newsreader, IBM_Plex_Sans } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { YandexMetrika } from '@/components/YandexMetrika'
 import { CHANNELS } from '@/lib/mock-data'
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
-const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
-const newsreader = Newsreader({
-  subsets: ['latin', 'latin-ext'],
-  style: ['normal', 'italic'],
-  variable: '--font-newsreader',
-})
-const ibmPlexSans = IBM_Plex_Sans({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-ibm-plex-sans',
+const inter = localFont({
+  src: [
+    { path: '../public/fonts/Inter-VariableFont_opsz,wght.ttf', style: 'normal' },
+    { path: '../public/fonts/Inter-Italic-VariableFont_opsz,wght.ttf', style: 'italic' },
+  ],
+  variable: '--font-inter',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -31,7 +28,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} ${ibmPlexSans.variable}`}>
+    <html lang="ru" className={inter.variable}>
+      <head>
+        <YandexMetrika />
+      </head>
       <body>
         <Header />
         <div className="page">{children}</div>

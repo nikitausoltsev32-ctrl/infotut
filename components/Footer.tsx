@@ -30,7 +30,6 @@ export default function Footer({ channels }: FooterProps) {
     {
       title: 'Сервисы',
       links: [
-        { label: 'Подписка', slug: 'subscribe' },
         { label: 'Архив', slug: 'archive' },
         { label: 'RSS', slug: 'api/rss' },
         { label: 'Карта сайта', slug: 'sitemap' },

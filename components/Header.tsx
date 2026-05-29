@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { SECTIONS } from '@/lib/mock-data'
 
 export default function Header({ activeSection }: { activeSection?: string }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     const head = document.querySelector<HTMLElement>('.site-head')
@@ -52,7 +54,6 @@ export default function Header({ activeSection }: { activeSection?: string }) {
             </span>
           </div>
           <div className="topbar-right">
-            <Link href="#" className="topbar-link">Подписка</Link>
             <Link href="#" className="topbar-link">Архив</Link>
             <Link href="#" className="topbar-link">Войти</Link>
           </div>
@@ -77,7 +78,7 @@ export default function Header({ activeSection }: { activeSection?: string }) {
             <span><span className="logo-info">Инфо</span><span className="logo-tut">Тут</span></span>
           </Link>
           <div className="masthead-actions">
-            <button className="search-btn" aria-label="Поиск">
+            <button className="search-btn" aria-label="Поиск" onClick={() => router.push('/search')}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <circle cx="11" cy="11" r="7" />
                 <path d="m20 20-3.5-3.5" strokeLinecap="round" />
@@ -95,10 +96,10 @@ export default function Header({ activeSection }: { activeSection?: string }) {
               </li>
             ))}
           </ul>
-          <Link href="#" className="nav-live">
+          <span className="nav-live">
             <span className="live-dot" />
             Прямой эфир
-          </Link>
+          </span>
         </nav>
       </header>
       </div>

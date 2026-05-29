@@ -25,8 +25,7 @@ export default function HomePage() {
         <aside className="hero-aside">
           <div className="ticker">
             <div className="ticker-head">
-              <span className="ticker-dot" />
-              <h4>Сейчас</h4>
+              <h4>Лента</h4>
               <span className="ticker-sub">обновлено {TICKER_ITEMS[0].time}</span>
             </div>
             <ol className="ticker-list">
