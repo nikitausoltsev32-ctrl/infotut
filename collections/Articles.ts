@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { sendArticleToTelegram } from '../lib/telegram'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
@@ -56,10 +57,15 @@ export const Articles: CollectionConfig = {
       async ({ doc, previousDoc }) => {
         if (doc.status === 'published' && previousDoc?.status !== 'published') {
           try {
-            await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000'}/api/telegram-webhook`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ articleId: doc.id }),
+            const section =
+              typeof doc.section === 'object' && doc.section && 'slug' in doc.section
+                ? String(doc.section.slug)
+                : undefined
+
+            await sendArticleToTelegram({
+              title: String(doc.title),
+              slug: String(doc.slug),
+              section,
             })
           } catch {
             // telegram notification is best-effort

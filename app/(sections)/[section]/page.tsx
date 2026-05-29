@@ -3,25 +3,14 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
-  HERO_ARTICLE,
   SECTIONS,
-  POLITICS_ARTICLES,
-  SECONDARY_ARTICLES,
-  FEATURES_ARTICLES,
   MOST_READ,
   OPINIONS,
   TECH_ARTICLES,
   TICKER_ITEMS,
 } from '@/lib/mock-data';
-import type { Article } from '@/lib/types';
 import { formatTime } from '@/lib/utils';
-
-const ALL_ARTICLES: Article[] = [
-  HERO_ARTICLE,
-  ...POLITICS_ARTICLES,
-  ...SECONDARY_ARTICLES,
-  ...FEATURES_ARTICLES,
-];
+import { getPublishedArticles } from '@/lib/articles';
 
 const SECTION_DESCRIPTIONS: Record<string, string> = {
   politika: 'Решения власти, региональная политика и законы, которые меняют повседневную жизнь.',
@@ -56,8 +45,9 @@ export default async function SectionPage({ params }: Props) {
   const section = SECTIONS.find((s) => s.slug === slug);
   if (!section) notFound();
 
-  const articles = ALL_ARTICLES.filter((a) => a.section === slug);
-  const relatedArticles = ALL_ARTICLES.filter((a) => a.section !== slug).slice(0, 5);
+  const allArticles = getPublishedArticles();
+  const articles = allArticles.filter((a) => a.section === slug);
+  const relatedArticles = allArticles.filter((a) => a.section !== slug).slice(0, 5);
   const leadArticle = articles[0];
   const feedArticles = articles.slice(1).length > 0 ? articles.slice(1) : relatedArticles;
   const sideArticles = articles.slice(1, 4).length > 0 ? articles.slice(1, 4) : relatedArticles.slice(0, 3);

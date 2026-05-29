@@ -1,32 +1,39 @@
 import { NextResponse } from 'next/server'
-import type { Article } from '@/lib/types'
-import {
-  HERO_ARTICLE,
-  SECONDARY_ARTICLES,
-  POLITICS_ARTICLES,
-  FEATURES_ARTICLES,
-} from '@/lib/mock-data'
-
-const ALL_ARTICLES: Article[] = [
-  HERO_ARTICLE,
-  ...SECONDARY_ARTICLES,
-  ...POLITICS_ARTICLES,
-  ...FEATURES_ARTICLES,
-]
+import { getPublishedArticles, searchArticles } from '@/lib/articles'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const section = searchParams.get('section') ?? undefined
-  const limit = Math.max(1, parseInt(searchParams.get('limit') ?? '10', 10) || 10)
+  const query = searchParams.get('q')?.trim().toLowerCase() ?? ''
+  const featured = searchParams.get('featured')
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '20', 10) || 20))
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1)
 
-  const filtered = section
-    ? ALL_ARTICLES.filter((a) => a.section === section)
-    : ALL_ARTICLES
+  let filtered = section
+    ? getPublishedArticles().filter((a) => a.section === section)
+    : getPublishedArticles()
 
-  const total = filtered.length
+  if (query) {
+    filtered = searchArticles(query, filtered)
+  }
+
+  if (featured === 'true') {
+    filtered = filtered.filter((a) => Boolean(a.reads))
+  }
+
+  const totalDocs = filtered.length
   const start = (page - 1) * limit
-  const articles = filtered.slice(start, start + limit)
+  const docs = filtered.slice(start, start + limit)
+  const totalPages = Math.ceil(totalDocs / limit)
 
-  return NextResponse.json({ articles, total, page, limit })
+  return NextResponse.json({
+    docs,
+    articles: docs,
+    totalDocs,
+    total: totalDocs,
+    page,
+    limit,
+    totalPages,
+    hasNextPage: page < totalPages,
+  })
 }

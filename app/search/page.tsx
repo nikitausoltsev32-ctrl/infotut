@@ -1,82 +1,83 @@
-'use client'
-
-import { useState, useMemo } from 'react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import {
-  HERO_ARTICLE,
-  SECONDARY_ARTICLES,
-  POLITICS_ARTICLES,
-  TECH_ARTICLES,
-  FEATURES_ARTICLES,
-} from '@/lib/mock-data'
-import type { Article } from '@/lib/types'
+import SearchClient from './SearchClient'
+import { SECTIONS } from '@/lib/mock-data'
+import { getPublishedArticles } from '@/lib/articles'
 
-const ALL_ARTICLES: Article[] = [
-  HERO_ARTICLE,
-  ...SECONDARY_ARTICLES,
-  ...POLITICS_ARTICLES,
-  ...TECH_ARTICLES.map((t, i) => ({
-    id: `tech-${i}`,
-    slug: '',
-    title: t.title,
-    kicker: t.kicker,
-    lede: '',
-    author: 'Редакция',
-    section: 'tekhnologii',
-    publishedAt: t.time,
-    status: 'published' as const,
-  })),
-  ...FEATURES_ARTICLES,
-].filter((a) => a.slug)
+export const metadata: Metadata = {
+  title: 'Поиск',
+  description: 'Поиск по материалам Инфотут.',
+}
 
-export default function SearchPage({
+export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string }
+  searchParams: Promise<{ q?: string | string[] }>
 }) {
-  const initial = searchParams.q ?? ''
-  const [query, setQuery] = useState(initial)
-
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return []
-    return ALL_ARTICLES.filter(
-      (a) =>
-        a.title.toLowerCase().includes(q) ||
-        a.kicker.toLowerCase().includes(q) ||
-        a.lede.toLowerCase().includes(q),
-    )
-  }, [query])
+  const params = await searchParams
+  const initial = Array.isArray(params.q) ? params.q[0] ?? '' : params.q ?? ''
+  const articleCount = getPublishedArticles().length
 
   return (
-    <main className="main" style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px' }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 24 }}>Поиск</h1>
-      <input
-        className="search-input"
-        type="search"
-        autoFocus
-        placeholder="Введите запрос…"
-        defaultValue={initial}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      {query.trim() && (
-        <p style={{ marginTop: 16, marginBottom: 24, color: 'var(--ink-3)', fontSize: 14 }}>
-          {results.length > 0
-            ? `${results.length} результат${results.length === 1 ? '' : results.length < 5 ? 'а' : 'ов'}`
-            : 'Ничего не найдено'}
-        </p>
-      )}
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 24 }}>
-        {results.map((a) => (
-          <li key={a.id} style={{ borderBottom: '1px solid var(--rule)', paddingBottom: 20 }}>
-            <span className="kicker" style={{ marginBottom: 6 }}>{a.kicker}</span>
-            <Link href={`/${a.section}/${a.slug}`} style={{ display: 'block', fontSize: 18, fontWeight: 600, lineHeight: 1.3, marginBottom: 6 }}>
-              {a.title}
-            </Link>
-            {a.lede && <p style={{ color: 'var(--ink-3)', fontSize: 14, margin: 0 }}>{a.lede}</p>}
-          </li>
-        ))}
-      </ul>
+    <main className="main search-page">
+      <header className="section-cover search-cover">
+        <div className="section-cover-copy">
+          <Link href="/" className="section-back">← Главная</Link>
+          <span className="kicker">Архив</span>
+          <h1>Поиск</h1>
+          <p>
+            Найдите материалы по заголовкам, описаниям, авторам и рубрикам редакционного архива.
+          </p>
+        </div>
+        <div className="section-cover-meta">
+          <span>{articleCount}</span>
+          <small>материалов в текущем архиве</small>
+        </div>
+      </header>
+
+      <section className="search-layout">
+        <SearchClient initialQuery={initial} />
+
+        <aside className="search-rail">
+          <div className="section-rail-block">
+            <h2>Рубрики</h2>
+            <ul className="section-side-list">
+              {SECTIONS.map((section) => (
+                <li key={section.slug}>
+                  <Link href={`/${section.slug}`}>
+                    <span>{section.slug}</span>
+                    {section.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="section-rail-block">
+            <h2>Сервисы</h2>
+            <ul className="section-side-list">
+              <li>
+                <Link href="/rss.xml">
+                  <span>RSS</span>
+                  Подписка на ленту материалов
+                </Link>
+              </li>
+              <li>
+                <Link href="/sitemap.xml">
+                  <span>XML</span>
+                  Карта сайта для индексации
+                </Link>
+              </li>
+              <li>
+                <Link href="/feedback">
+                  <span>Редакция</span>
+                  Связаться с редакцией
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </section>
     </main>
   )
 }

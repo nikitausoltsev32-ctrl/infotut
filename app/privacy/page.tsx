@@ -127,7 +127,7 @@ export default function PrivacyPage() {
             <p>
               Редакция вправе вносить изменения в настоящую Политику. Актуальная версия всегда
               доступна по адресу{' '}
-              <a href="/privacy" className="text-[var(--accent)] underline underline-offset-2">
+              <a href="https://infotut.ru/privacy" className="text-[var(--accent)] underline underline-offset-2">
                 infotut.ru/privacy
               </a>. Продолжение использования Сайта после обновления означает согласие с новой редакцией.
             </p>

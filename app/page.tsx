@@ -55,7 +55,7 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
-            <Link href="#" className="channels-all">Все каналы редакции →</Link>
+            <Link href="/about#channels" className="channels-all">Все каналы редакции →</Link>
           </div>
 
           <div className="about-card">
@@ -205,7 +205,7 @@ export default function HomePage() {
       <section>
         <div className="section-head">
           <h2>Наши проекты</h2>
-          <Link href="#" className="section-more">Архив спецпроектов →</Link>
+          <Link href="/search?q=спецпроект" className="section-more">Архив спецпроектов →</Link>
         </div>
         <div className="projects-grid">
           {PROJECTS.map((p) => (

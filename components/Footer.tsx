@@ -1,11 +1,6 @@
 import Link from 'next/link';
-import type { Channel } from '@/lib/types';
 
-interface FooterProps {
-  channels: Channel[];
-}
-
-export default function Footer({ channels }: FooterProps) {
+export default function Footer() {
   const categories = [
     {
       title: 'Рубрики',
@@ -22,17 +17,17 @@ export default function Footer({ channels }: FooterProps) {
       title: 'Редакция',
       links: [
         { label: 'О нас', slug: 'about' },
-        { label: 'Авторы', slug: 'authors' },
         { label: 'Контакты', slug: 'feedback' },
-        { label: 'Вакансии', slug: 'jobs' },
+        { label: 'Политика конф.', slug: 'privacy' },
+        { label: 'Условия', slug: 'terms' },
       ],
     },
     {
       title: 'Сервисы',
       links: [
-        { label: 'Архив', slug: 'archive' },
-        { label: 'RSS', slug: 'api/rss' },
-        { label: 'Карта сайта', slug: 'sitemap' },
+        { label: 'Поиск', slug: 'search' },
+        { label: 'RSS', slug: 'rss.xml' },
+        { label: 'Карта сайта', slug: 'sitemap.xml' },
       ],
     },
   ];

@@ -2,28 +2,21 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { SECTIONS, POLITICS_ARTICLES, SECONDARY_ARTICLES, FEATURES_ARTICLES, HERO_ARTICLE } from '@/lib/mock-data';
+import { SECTIONS } from '@/lib/mock-data';
+import { findArticle, findArticleBySlug, getPublishedArticles } from '@/lib/articles';
 import { formatDate, formatTime } from '@/lib/utils';
-import type { Article } from '@/lib/types';
-
-const ALL_ARTICLES: Article[] = [
-  HERO_ARTICLE,
-  ...POLITICS_ARTICLES,
-  ...SECONDARY_ARTICLES,
-  ...FEATURES_ARTICLES,
-];
 
 interface Props {
   params: Promise<{ section: string; slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return ALL_ARTICLES.map((a) => ({ section: a.section, slug: a.slug }));
+  return getPublishedArticles().map((a) => ({ section: a.section, slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = ALL_ARTICLES.find((a) => a.slug === slug);
+  const article = findArticleBySlug(slug);
   if (!article) return {};
   return {
     title: article.title,
@@ -34,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArticlePage({ params }: Props) {
   const { section: sectionSlug, slug } = await params;
-  const article = ALL_ARTICLES.find((a) => a.slug === slug && a.section === sectionSlug);
+  const article = findArticle(sectionSlug, slug);
   if (!article) notFound();
 
   const section = SECTIONS.find((s) => s.slug === sectionSlug);

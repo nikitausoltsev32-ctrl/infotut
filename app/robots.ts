@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
+import { getBaseUrl } from '@/lib/site'
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: '*', allow: '/', disallow: ['/admin', '/api/'] },
-    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://infotut.ru'}/sitemap.xml`,
+    sitemap: `${getBaseUrl()}/sitemap.xml`,
   }
 }

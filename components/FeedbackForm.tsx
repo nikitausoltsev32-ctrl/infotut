@@ -86,6 +86,8 @@ export default function FeedbackForm() {
         body: JSON.stringify(formData),
       });
 
+      const result = await response.json().catch(() => null) as { error?: string } | null;
+
       if (response.ok) {
         setSubmitStatus({
           type: 'success',
@@ -100,7 +102,7 @@ export default function FeedbackForm() {
       } else {
         setSubmitStatus({
           type: 'error',
-          message: 'Ошибка при отправке. Попробуйте позже.',
+          message: result?.error ?? 'Ошибка при отправке. Попробуйте позже.',
         });
       }
     } catch {

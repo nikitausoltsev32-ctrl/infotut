@@ -9,6 +9,7 @@ function getBot(): TelegramBot | null {
 export async function sendArticleToTelegram(article: {
   title: string
   slug: string
+  section?: string
   thumbnailUrl?: string
 }): Promise<void> {
   const bot = getBot()
@@ -17,7 +18,9 @@ export async function sendArticleToTelegram(article: {
   const channelId = process.env.TELEGRAM_CHANNEL_ID
   if (!channelId) return
 
-  const text = `📰 ${article.title}\n\nЧитать: https://infotut.ru/${article.slug}`
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://infotut.ru').replace(/\/$/, '')
+  const path = article.section ? `${article.section}/${article.slug}` : article.slug
+  const text = `📰 ${article.title}\n\nЧитать: ${baseUrl}/${path}`
 
   try {
     if (article.thumbnailUrl) {

@@ -1,13 +1,26 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { SECTIONS } from '@/lib/mock-data'
 
 export default function Header({ activeSection }: { activeSection?: string }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
+  const currentSection = activeSection ?? pathname.split('/').filter(Boolean)[0]
+  const currentDate = useMemo(() => {
+    const formatted = new Intl.DateTimeFormat('ru-RU', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Europe/Moscow',
+    }).format(new Date())
+
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1)
+  }, [])
 
   useEffect(() => {
     const head = document.querySelector<HTMLElement>('.site-head')
@@ -46,7 +59,7 @@ export default function Header({ activeSection }: { activeSection?: string }) {
       <div className="topbar">
         <div className="topbar-inner">
           <div className="topbar-left">
-            <span className="topbar-date">Среда, 28 мая 2026</span>
+            <span className="topbar-date">{currentDate}</span>
             <span className="topbar-sep">·</span>
             <span className="topbar-weather">
               <span className="dot" />
@@ -54,8 +67,8 @@ export default function Header({ activeSection }: { activeSection?: string }) {
             </span>
           </div>
           <div className="topbar-right">
-            <Link href="#" className="topbar-link">Архив</Link>
-            <Link href="#" className="topbar-link">Войти</Link>
+            <Link href="/rss.xml" className="topbar-link">RSS</Link>
+            <Link href="/feedback" className="topbar-link">Контакты</Link>
           </div>
         </div>
       </div>
@@ -91,7 +104,7 @@ export default function Header({ activeSection }: { activeSection?: string }) {
         <nav className="nav" aria-label="Основная навигация">
           <ul>
             {SECTIONS.map((s) => (
-              <li key={s.slug} className={activeSection === s.slug ? 'nav-active' : ''}>
+              <li key={s.slug} className={currentSection === s.slug ? 'nav-active' : ''}>
                 <Link href={`/${s.slug}`}>{s.name}</Link>
               </li>
             ))}
@@ -133,7 +146,7 @@ export default function Header({ activeSection }: { activeSection?: string }) {
               <a href="https://t.me/infotut_ru" target="_blank" rel="noopener noreferrer">TG</a>
               <a href="https://vk.com/infotut" target="_blank" rel="noopener noreferrer">VK</a>
               <a href="https://dzen.ru/infotut" target="_blank" rel="noopener noreferrer">Дзен</a>
-              <a href="/api/rss" target="_blank" rel="noopener noreferrer">RSS</a>
+              <a href="/rss.xml" target="_blank" rel="noopener noreferrer">RSS</a>
             </div>
           </div>
         </div>

@@ -4,7 +4,6 @@ import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { YandexMetrika } from '@/components/YandexMetrika'
-import { CHANNELS } from '@/lib/mock-data'
 
 const inter = localFont({
   src: [
@@ -35,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Header />
         <div className="page">{children}</div>
-        <Footer channels={CHANNELS} />
+        <Footer />
       </body>
     </html>
   )

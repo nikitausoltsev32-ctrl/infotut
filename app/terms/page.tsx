@@ -101,7 +101,7 @@ export default function TermsPage() {
             <p>
               Редакция вправе изменять настоящие Условия без предварительного уведомления.
               Актуальная редакция доступна по адресу{' '}
-              <a href="/terms" className="text-[var(--accent)] underline underline-offset-2">
+              <a href="https://infotut.ru/terms" className="text-[var(--accent)] underline underline-offset-2">
                 infotut.ru/terms
               </a>. Продолжение использования Сайта означает принятие действующих Условий.
             </p>
