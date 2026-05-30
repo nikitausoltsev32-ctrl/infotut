@@ -5,7 +5,7 @@ import { formatTime } from '@/lib/utils';
 
 type Props = {
   article: Article;
-  variant?: 'secondary' | 'feature' | 'category' | 'feature-lead' | 'cat-lead';
+  variant?: 'secondary' | 'feature' | 'category' | 'feature-lead' | 'cat-lead' | 'compact';
 };
 
 export default function NewsCard({ article, variant = 'secondary' }: Props) {
@@ -32,6 +32,31 @@ export default function NewsCard({ article, variant = 'secondary' }: Props) {
             <span>{article.author}</span>
             <span className="meta-dot">·</span>
             <span>{formatTime(article.publishedAt)}</span>
+          </div>
+        </article>
+      </Link>
+    );
+  }
+
+  if (variant === 'compact') {
+    return (
+      <Link href={`/${article.section}/${article.slug}`}>
+        <article className="compact-card">
+          <div className="imgslot" style={{ aspectRatio }}>
+            <Image
+              src={article.thumbnail ?? '/placeholder.jpg'}
+              alt={article.title}
+              fill
+            />
+          </div>
+          <div className="compact-copy">
+            <div className="kicker">{article.kicker}</div>
+            <h3 className="compact-title">{article.title}</h3>
+            <div className="meta">
+              <span>{article.author}</span>
+              <span className="meta-dot">·</span>
+              <span>{formatTime(article.publishedAt)}</span>
+            </div>
           </div>
         </article>
       </Link>

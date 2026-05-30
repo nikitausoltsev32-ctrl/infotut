@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { CHANNELS, PRINCIPLES } from '@/lib/mock-data';
 
 export const metadata: Metadata = {
-  title: 'О редакции',
-  description: 'Инфотут — независимое новостное издание о России, редакционных принципах и каналах связи.',
+  title: 'О нас — ИнфоТут',
+  description: 'ИнфоТут — новостной и информационный проект о главных событиях, контракте на СВО, выплатах и условиях службы.',
 };
 
 export default function AboutPage() {
@@ -12,23 +12,33 @@ export default function AboutPage() {
     <main className="main" style={{ maxWidth: '980px' }}>
       <section className="editorial" style={{ marginTop: 0 }}>
         <div>
-          <span className="kicker">О редакции</span>
-          <h1 className="editorial-title">Инфотут пишет о том, что влияет на повседневную жизнь</h1>
+          <span className="kicker">О нас</span>
+          <h1 className="editorial-title">ИнфоТут — понятные и актуальные материалы без лишней воды</h1>
           <p className="editorial-copy">
-            Мы собираем главные новости по политике, экономике, обществу, культуре, спорту и технологиям.
-            Формат проекта — спокойная новостная лента, рубрики, разборы и RSS для внешних площадок.
+            ИнфоТут — новостной и информационный проект, созданный для тех, кто хочет разбираться в главных событиях
+            и получать ответы на важные вопросы. Мы публикуем свежие новости по политике, обществу и экономике,
+            а также подробные статьи о контракте на СВО: условия службы, выплаты, льготы и реальные истории участников.
           </p>
-          <Link href="/feedback" className="editorial-link">Связаться с редакцией →</Link>
+          <p className="editorial-copy">
+            Наша задача — давать понятные, проверенные и актуальные материалы, которые помогают людям быстро находить
+            нужную информацию. Для связи: <a href="mailto:info@infotut.ru">info@infotut.ru</a>
+          </p>
+          <Link href="/feedback" className="editorial-link">Написать в редакцию →</Link>
         </div>
         <div>
-          <p className="editorial-team-head">Разделы</p>
+          <p className="editorial-team-head">Темы</p>
           <ul className="editorial-team">
-            {['Политика', 'Экономика', 'Общество', 'Культура'].map((name) => (
-              <li key={name}>
-                <div className="team-avatar">{name.slice(0, 1)}</div>
+            {[
+              { name: 'Новости', role: 'политика, общество, экономика' },
+              { name: 'Статьи о СВО', role: 'контракт, условия, выплаты, льготы' },
+              { name: 'БПЛА', role: 'беспилотные подразделения, требования, служба' },
+              { name: 'Истории', role: 'реальный опыт участников СВО' },
+            ].map((item) => (
+              <li key={item.name}>
+                <div className="team-avatar">{item.name.slice(0, 1)}</div>
                 <div>
-                  <div className="team-name">{name}</div>
-                  <div className="team-role">ежедневная лента и редакционный отбор</div>
+                  <div className="team-name">{item.name}</div>
+                  <div className="team-role">{item.role}</div>
                 </div>
               </li>
             ))}

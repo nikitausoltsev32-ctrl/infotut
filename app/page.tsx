@@ -81,9 +81,17 @@ export default function HomePage() {
         </div>
         <div className="cat-grid cat-grid-6">
           <NewsCard article={POLITICS_ARTICLES[0]} variant="cat-lead" />
-          {POLITICS_ARTICLES.slice(1).map((a) => (
+          {POLITICS_ARTICLES.slice(1, 4).map((a) => (
             <NewsCard key={a.id} article={a} variant="category" />
           ))}
+        </div>
+        <div className="pol-feature-row">
+          <NewsCard article={POLITICS_ARTICLES[4]} variant="feature" />
+          <div className="pol-feature-side">
+            {POLITICS_ARTICLES.slice(5, 7).map((a) => (
+              <NewsCard key={a.id} article={a} variant="compact" />
+            ))}
+          </div>
         </div>
       </section>
 

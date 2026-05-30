@@ -3,14 +3,15 @@ import {
   HERO_ARTICLE,
   POLITICS_ARTICLES,
   SECONDARY_ARTICLES,
+  SVO_ARTICLES,
 } from './mock-data'
 import type { Article } from './types'
 
-// Single public article source until real CMS content is migrated.
 export const ALL_ARTICLES: Article[] = [
   HERO_ARTICLE,
   ...SECONDARY_ARTICLES,
   ...POLITICS_ARTICLES,
+  ...SVO_ARTICLES,
   ...FEATURES_ARTICLES,
 ]
 

@@ -29,15 +29,11 @@ export default function Header({ activeSection }: { activeSection?: string }) {
     let ticking = false
 
     const update = () => {
-      const progress = Math.min(window.scrollY / 120, 1)
-      const opacity = Math.max(1 - progress, 0)
-      head.style.setProperty('--head-progress', progress.toFixed(3))
-      head.style.setProperty('--head-opacity', opacity.toFixed(3))
-      head.style.setProperty('--topbar-height', `${44 * opacity}px`)
-      head.style.setProperty('--topbar-offset', `${-8 * progress}px`)
-      head.style.setProperty('--nav-height', `${96 * opacity}px`)
-      head.style.setProperty('--nav-offset', `${-10 * progress}px`)
-      head.classList.toggle('site-head-collapsed', progress > 0.96)
+      const y = window.scrollY
+      const collapsed = head.classList.contains('site-head-collapsed')
+      // Hysteresis so the header never flickers around the threshold.
+      if (!collapsed && y > 90) head.classList.add('site-head-collapsed')
+      else if (collapsed && y < 50) head.classList.remove('site-head-collapsed')
       ticking = false
     }
 
