@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
   SECTIONS,
+  STATYI_SUBCATEGORIES,
   MOST_READ,
   OPINIONS,
   TECH_ARTICLES,
@@ -20,14 +21,20 @@ const SECTION_DESCRIPTIONS: Record<string, string> = {
   sport: 'Главные турниры, федерации, клубы и люди, которые делают российский спорт заметным.',
   tekhnologii: 'Наука, цифровые сервисы, индустрия ИИ и технологические решения для страны.',
   mneniya: 'Колонки редакции и приглашённых авторов о событиях, которые требуют спокойного разбора.',
+  statyi: 'Разборы и практические материалы о службе по контракту на СВО — по направлениям, условиям, выплатам и реальному опыту.',
 };
 
 interface Props {
   params: Promise<{ section: string }>;
-  searchParams: Promise<{ page?: string | string[] }>;
+  searchParams: Promise<{ page?: string | string[]; folder?: string | string[] }>;
 }
 
 const STATYI_PAGE_SIZE = 25;
+const STATYI_FOLDER_PREVIEW = 8;
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 function getPageNumber(value: string | string[] | undefined, totalPages: number) {
   const raw = Array.isArray(value) ? value[0] : value;
@@ -58,6 +65,17 @@ export default async function SectionPage({ params, searchParams }: Props) {
   if (!section) notFound();
 
   const allArticles = getPublishedArticles();
+
+  if (slug === 'statyi') {
+    return (
+      <StatyiSection
+        sectionName={section.name}
+        articles={allArticles.filter((a) => a.section === 'statyi')}
+        activeFolder={firstParam(query.folder)}
+      />
+    );
+  }
+
   const sectionArticles = allArticles.filter((a) => a.section === slug);
   const totalPages = slug === 'statyi' ? Math.ceil(sectionArticles.length / STATYI_PAGE_SIZE) : 1;
   const currentPage = getPageNumber(query.page, totalPages);
@@ -222,6 +240,95 @@ export default async function SectionPage({ params, searchParams }: Props) {
             </div>
           </section>
         </>
+      )}
+    </main>
+  );
+}
+
+function StatyiArticleRow({ article }: { article: ReturnType<typeof getPublishedArticles>[number] }) {
+  return (
+    <Link href={`/${article.section}/${article.slug}`} className="section-row" key={article.id}>
+      <div className="imgslot section-row-img">
+        <Image
+          src={article.thumbnail ?? '/placeholder.jpg'}
+          alt={article.title}
+          fill
+          sizes="(max-width: 900px) 96px, 160px"
+        />
+      </div>
+      <div className="section-row-copy">
+        <span className="kicker">{article.kicker}</span>
+        <h3>{article.title}</h3>
+        <p>{article.lede}</p>
+        <div className="meta">
+          <span>{article.author}</span>
+          <span className="meta-dot">·</span>
+          <time dateTime={article.publishedAt}>{formatTime(article.publishedAt)}</time>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function StatyiSection({
+  sectionName,
+  articles,
+  activeFolder,
+}: {
+  sectionName: string;
+  articles: ReturnType<typeof getPublishedArticles>;
+  activeFolder?: string;
+}) {
+  const folders = STATYI_SUBCATEGORIES.map((sc) => ({
+    ...sc,
+    items: articles.filter((a) => a.subcategory === sc.slug),
+  })).filter((f) => f.items.length > 0);
+
+  const active = activeFolder ? folders.find((f) => f.slug === activeFolder) : undefined;
+
+  return (
+    <main className="main section-page">
+      <header className="section-cover">
+        <div className="section-cover-copy">
+          <Link href={active ? '/statyi' : '/'} className="section-back">
+            {active ? '← Все папки' : '← Главная'}
+          </Link>
+          <span className="kicker">{active ? 'Папка' : 'Раздел'}</span>
+          <h1>{active ? active.name : sectionName}</h1>
+          {SECTION_DESCRIPTIONS.statyi && !active && <p>{SECTION_DESCRIPTIONS.statyi}</p>}
+        </div>
+        <div className="section-cover-meta">
+          <span>{active ? active.items.length : articles.length}</span>
+          <small>{active ? 'материалов в папке' : 'материалов в выпуске'}</small>
+        </div>
+      </header>
+
+      {active ? (
+        <section className="section-feed">
+          <div className="section-row-list">
+            {active.items.map((article) => (
+              <StatyiArticleRow key={article.id} article={article} />
+            ))}
+          </div>
+        </section>
+      ) : (
+        folders.map((folder) => (
+          <section className="section-feed" key={folder.slug}>
+            <div className="section-head section-head-tight">
+              <h2>{folder.name}</h2>
+              {folder.items.length > STATYI_FOLDER_PREVIEW && (
+                <Link href={`/statyi?folder=${folder.slug}`} className="section-more">
+                  все {folder.items.length} →
+                </Link>
+              )}
+            </div>
+            <div className="section-row-list">
+              {folder.items.slice(0, STATYI_FOLDER_PREVIEW).map((article) => (
+                <StatyiArticleRow key={article.id} article={article} />
+              ))}
+            </div>
+          </section>
+        ))
       )}
     </main>
   );

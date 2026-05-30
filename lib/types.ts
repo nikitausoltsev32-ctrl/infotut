@@ -8,6 +8,7 @@ export interface Article {
   thumbnail?: string
   author: string
   section: string
+  subcategory?: string
   publishedAt: string
   readTime?: string
   reads?: string
