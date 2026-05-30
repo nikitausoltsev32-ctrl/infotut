@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useLayoutEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { SECTIONS } from '@/lib/mock-data'
@@ -22,11 +22,11 @@ export default function Header({ activeSection }: { activeSection?: string }) {
     return formatted.charAt(0).toUpperCase() + formatted.slice(1)
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const head = document.querySelector<HTMLElement>('.site-head')
     if (!head) return
 
-    let ticking = false
+    let settleTimer: number | undefined
 
     const update = () => {
       const y = window.scrollY
@@ -34,19 +34,25 @@ export default function Header({ activeSection }: { activeSection?: string }) {
       // Hysteresis so the header never flickers around the threshold.
       if (!collapsed && y > 90) head.classList.add('site-head-collapsed')
       else if (collapsed && y < 50) head.classList.remove('site-head-collapsed')
-      ticking = false
     }
 
     const onScroll = () => {
-      if (ticking) return
-      ticking = true
-      window.requestAnimationFrame(update)
+      window.clearTimeout(settleTimer)
+      update()
+      settleTimer = window.setTimeout(update, 160)
     }
 
     update()
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', update)
+    window.addEventListener('scrollend', update)
 
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', update)
+      window.removeEventListener('scrollend', update)
+      window.clearTimeout(settleTimer)
+    }
   }, [])
 
   return (
