@@ -65,13 +65,17 @@
   top: 0;
   z-index: 50;
   background: var(--paper);
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
-  transition: box-shadow var(--header-duration) var(--header-ease);
-  will-change: box-shadow;
+  transition: box-shadow var(--header-duration) var(--header-ease),
+              transform 0.28s var(--header-ease);
+  will-change: transform;
 }
 .site-head-collapsed {
   box-shadow: 0 8px 24px rgba(10, 10, 10, 0.12);
+}
+.site-head-hidden {
+  transform: translate3d(0, -100%, 0);
 }
 @media (prefers-reduced-motion: reduce) {
   .site-head, .topbar, .nav, .masthead-row { transition: none; }

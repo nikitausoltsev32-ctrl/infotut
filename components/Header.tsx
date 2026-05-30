@@ -26,32 +26,40 @@ export default function Header({ activeSection }: { activeSection?: string }) {
     const head = document.querySelector<HTMLElement>('.site-head')
     if (!head) return
 
-    let settleTimer: number | undefined
+    let lastY = window.scrollY
+    let ticking = false
 
     const update = () => {
+      ticking = false
       const y = window.scrollY
       const collapsed = head.classList.contains('site-head-collapsed')
-      // Hysteresis so the header never flickers around the threshold.
+      // Hysteresis so the shadow never flickers around the threshold.
       if (!collapsed && y > 90) head.classList.add('site-head-collapsed')
       else if (collapsed && y < 50) head.classList.remove('site-head-collapsed')
+
+      const delta = y - lastY
+      // Ignore tiny moves (jitter) and bounce-scroll past the page edges.
+      if (Math.abs(delta) > 6 && y >= 0) {
+        if (delta > 0 && y > 120) head.classList.add('site-head-hidden')
+        else if (delta < 0) head.classList.remove('site-head-hidden')
+      }
+      if (y <= 120) head.classList.remove('site-head-hidden')
+      lastY = y
     }
 
     const onScroll = () => {
-      window.clearTimeout(settleTimer)
-      update()
-      settleTimer = window.setTimeout(update, 160)
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(update)
     }
 
     update()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', update)
-    window.addEventListener('scrollend', update)
 
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', update)
-      window.removeEventListener('scrollend', update)
-      window.clearTimeout(settleTimer)
     }
   }, [])
 
