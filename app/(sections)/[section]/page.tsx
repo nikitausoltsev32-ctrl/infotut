@@ -24,6 +24,17 @@ const SECTION_DESCRIPTIONS: Record<string, string> = {
 
 interface Props {
   params: Promise<{ section: string }>;
+  searchParams: Promise<{ page?: string | string[] }>;
+}
+
+const STATYI_PAGE_SIZE = 25;
+
+function getPageNumber(value: string | string[] | undefined, totalPages: number) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const parsed = Number.parseInt(raw ?? '1', 10);
+
+  if (!Number.isFinite(parsed) || parsed < 1) return 1;
+  return Math.min(parsed, Math.max(totalPages, 1));
 }
 
 export async function generateStaticParams() {
@@ -40,18 +51,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SectionPage({ params }: Props) {
+export default async function SectionPage({ params, searchParams }: Props) {
   const { section: slug } = await params;
+  const query = await searchParams;
   const section = SECTIONS.find((s) => s.slug === slug);
   if (!section) notFound();
 
   const allArticles = getPublishedArticles();
-  const articles = allArticles.filter((a) => a.section === slug);
+  const sectionArticles = allArticles.filter((a) => a.section === slug);
+  const totalPages = slug === 'statyi' ? Math.ceil(sectionArticles.length / STATYI_PAGE_SIZE) : 1;
+  const currentPage = getPageNumber(query.page, totalPages);
+  const articles = slug === 'statyi'
+    ? sectionArticles.slice((currentPage - 1) * STATYI_PAGE_SIZE, currentPage * STATYI_PAGE_SIZE)
+    : sectionArticles;
   const relatedArticles = allArticles.filter((a) => a.section !== slug).slice(0, 5);
   const leadArticle = articles[0];
   const feedArticles = articles.slice(1).length > 0 ? articles.slice(1) : relatedArticles;
   const sideArticles = articles.slice(1, 4).length > 0 ? articles.slice(1, 4) : relatedArticles.slice(0, 3);
-  const issueCount = slug === 'mneniya' ? OPINIONS.length : articles.length;
+  const issueCount = slug === 'mneniya' ? OPINIONS.length : sectionArticles.length;
 
   return (
     <main className="main section-page">
@@ -60,7 +77,7 @@ export default async function SectionPage({ params }: Props) {
           <Link href="/" className="section-back">← Главная</Link>
           <span className="kicker">Раздел</span>
           <h1>{section.name}</h1>
-          <p>{SECTION_DESCRIPTIONS[slug]}</p>
+          {SECTION_DESCRIPTIONS[slug] && <p>{SECTION_DESCRIPTIONS[slug]}</p>}
         </div>
         <div className="section-cover-meta">
           <span>{issueCount}</span>
@@ -82,6 +99,7 @@ export default async function SectionPage({ params }: Props) {
                       alt={leadArticle.title}
                       fill
                       priority
+                      sizes="(max-width: 900px) 100vw, 50vw"
                     />
                   </div>
                   <div className="section-lead-copy">
@@ -130,6 +148,7 @@ export default async function SectionPage({ params }: Props) {
                         src={article.thumbnail ?? '/placeholder.jpg'}
                         alt={article.title}
                         fill
+                        sizes="(max-width: 900px) 96px, 160px"
                       />
                     </div>
                     <div className="section-row-copy">
@@ -145,6 +164,20 @@ export default async function SectionPage({ params }: Props) {
                   </Link>
                 ))}
               </div>
+              {totalPages > 1 && (
+                <nav className="section-pagination" aria-label="Страницы раздела">
+                  {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                    <Link
+                      key={page}
+                      href={page === 1 ? `/${slug}` : `/${slug}?page=${page}`}
+                      className={page === currentPage ? 'section-pagination-active' : undefined}
+                      aria-current={page === currentPage ? 'page' : undefined}
+                    >
+                      {page}
+                    </Link>
+                  ))}
+                </nav>
+              )}
             </div>
 
             <aside className="section-rail">

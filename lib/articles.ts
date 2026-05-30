@@ -3,6 +3,7 @@ import {
   HERO_ARTICLE,
   POLITICS_ARTICLES,
   SECONDARY_ARTICLES,
+  STATYI_ARTICLES,
   SVO_ARTICLES,
 } from './mock-data'
 import type { Article } from './types'
@@ -13,6 +14,7 @@ export const ALL_ARTICLES: Article[] = [
   ...POLITICS_ARTICLES,
   ...SVO_ARTICLES,
   ...FEATURES_ARTICLES,
+  ...STATYI_ARTICLES,
 ]
 
 export function getPublishedArticles() {
